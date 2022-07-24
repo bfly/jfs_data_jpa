@@ -23,11 +23,17 @@ public class StudentService {
         return studentRepository.findByName(studentName);
     }
 
-    public void addStudent(Student student){
-        studentRepository.save(student);
+    public Student save(Student student) {
+        return studentRepository.save(student);
     }
 
     public void deleteStudent(Long studentId){
         studentRepository.deleteById(studentId);
     }
+
+    public void deleteAll() {
+        studentRepository.deleteAll();
+    }
+
+    public long count() { return studentRepository.count(); }
 }
