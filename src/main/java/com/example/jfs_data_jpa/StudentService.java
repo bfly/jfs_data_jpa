@@ -8,8 +8,13 @@ import java.util.Optional;
 
 @Service
 public class StudentService {
+
     @Autowired
-    private StudentRepository studentRepository;
+    private final StudentRepository studentRepository;
+
+    public StudentService(@Autowired StudentRepository studentRepository) {
+        this.studentRepository = studentRepository;
+    }
 
     public List<Student> getStudents(){
         return studentRepository.findAll();

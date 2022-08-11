@@ -10,16 +10,19 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.ResponseEntity;
 
 import javax.management.OperationsException;
+import javax.transaction.Transactional;
 import java.util.Arrays;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment =
+        SpringBootTest.WebEnvironment.DEFINED_PORT)
+@Transactional
 public class StudentRestApiTest {
 
     @LocalServerPort
-    private int port;
+    private final int port = 8080;
 
     String baseUrl = "http://localhost:";
 
@@ -32,7 +35,8 @@ public class StudentRestApiTest {
 
     private ResponseEntity<Student[]> testGetStudents(String url) {
         System.out.println("\n" + url);
-        ResponseEntity<Student[]> response = restTemplate.getForEntity(url, Student[].class);
+        ResponseEntity<Student[]> response =
+            restTemplate.getForEntity(url, Student[].class);
         assertNotNull(response);
         assertEquals(Response.SC_OK, response.getStatusCodeValue());
         System.out.println(Arrays.toString(response.getBody()));
@@ -53,7 +57,7 @@ public class StudentRestApiTest {
         String url = baseUrl + port + "/students?name=Palmer";
         System.out.println("\n" + url);
         ResponseEntity<Student[]> response = testGetStudents(url);
-        assertEquals(1, response.getBody().length);
+        assertEquals(1, Objects.requireNonNull(response.getBody()).length);
         System.out.println(Arrays.toString(response.getBody()));
         System.out.println("Success");
     }
@@ -110,7 +114,7 @@ public class StudentRestApiTest {
     }
 
     @Test
-    void testDelete1() {                                                                        // tested
+    void testDelete() {                                                                        // tested
         int before = getCount();
         String url2 = baseUrl + port + "/students/delete/1";
         System.out.println("\n" + url2);

@@ -21,7 +21,8 @@ public class StudentRestApi {
     Logger logger = LoggerFactory.getLogger(StudentRestApi.class);
 
     @GetMapping("/students")                // Get all and by name                          // tested
-    public ResponseEntity<List<Student>> getStudents(@RequestParam(required = false) String name) {
+    public ResponseEntity<List<Student>>
+    getStudents(@RequestParam(required = false) String name) {
         try {
             List<Student> students = new ArrayList<>();
             if (name == null) {         // get all students
@@ -44,10 +45,8 @@ public class StudentRestApi {
     public ResponseEntity<Student> getStudent(@PathVariable("id") long id) {                 // tested
         logger.info("findOne");
         Optional<Student> studentData = studentService.findOne(id);
-        return studentData.map(student
-                -> new ResponseEntity<>(student, HttpStatus.OK))        // student found
-            .orElseGet(()
-                -> new ResponseEntity<>(HttpStatus.NOT_FOUND));         // not found
+        return studentData.map(ResponseEntity::ok)                      // student found
+            .orElseGet(() -> ResponseEntity.notFound().build());        // not found
     }
 
     @GetMapping("/students/count")                                                           // tested
