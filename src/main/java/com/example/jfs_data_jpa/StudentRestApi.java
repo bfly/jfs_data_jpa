@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.management.OperationsException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -77,23 +76,12 @@ public class StudentRestApi {
         }
     }
 
-    @DeleteMapping("/students/delete/{id}")                                                 // tested
-    public ResponseEntity<HttpStatus> deleteStudent(@PathVariable("id") long id) {
-        logger.info("deleteById");
-        try {
-            studentService.deleteStudent(id);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @DeleteMapping("/students/delete/all")                                                  // tested
-    public void deleteAllStudents() throws OperationsException {
-        logger.info("deleteAll");
-        studentService.deleteAll();
-        if (studentService.count() > 0L)                // should be zero
-            throw new OperationsException();
+    @DeleteMapping("/students/{id}")                                                 // tested
+    public HttpStatus deleteStudent(@PathVariable("id") Long id) {
+        logger.info("deleteById: " + id);
+        studentService.deleteStudent(id);
+        Optional<Student> studentOpt = studentService.findOne(id);
+        return studentOpt.isEmpty() ? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.OK;     // not found
     }
 
 }

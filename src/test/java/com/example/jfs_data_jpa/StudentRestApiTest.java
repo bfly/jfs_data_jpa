@@ -1,7 +1,6 @@
 package com.example.jfs_data_jpa;
 
 import org.apache.catalina.connector.Response;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -99,18 +98,6 @@ public class StudentRestApiTest {
         response = restTemplate.postForObject(url, student, String.class);
         System.out.println(response);
         System.out.println("Success");
-    }
-
-    @Test
-    @Disabled
-    void testDeleteAll() {                                                                      // tested
-        String url2 = baseUrl + port + "/students/delete/all";
-        System.out.println("\n" + url2);
-        restTemplate.delete(url2);
-        assertDoesNotThrow(() -> OperationsException.class);
-        int after = getCount();
-        assertEquals(0, after);                             // Verify delete worked
-        System.out.print("Success");
     }
 
     @Test

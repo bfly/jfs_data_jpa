@@ -5,16 +5,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import javax.transaction.Transactional;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.springframework.http.RequestEntity.put;
 
 @Transactional
 @SpringBootTest
@@ -76,17 +78,20 @@ public class StudentServiceTest {
 
     @Test
     void testUpdateStudents() {
-        String url1 = baseURL + "/students/5";
+        String url1 = baseURL + "/students/1";
+        String url2 = baseURL + "/students";
         System.out.println(url1);
         ResponseEntity<Student> response = restTemplate.getForEntity(url1, Student.class);
         assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
         Student student = response.getBody();
         assertNotNull(student);
         System.out.println("Before: " + student);
+
         student.setName("George");
-        String url2 = baseURL + "/students";
-        put(url2, student);
+        HttpEntity<Student> request = new HttpEntity<>(student);
+        response = restTemplate.exchange(url2, HttpMethod.PUT, request, Student.class);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         response = restTemplate.getForEntity(url1, Student.class);
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -104,13 +109,12 @@ public class StudentServiceTest {
         ResponseEntity<Student> response = restTemplate.getForEntity(url, Student.class);
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        Student student = response.getBody();
-        assertNotNull(student);
-        restTemplate.delete(url);
-        System.out.println("...");
-        response = restTemplate.getForEntity(url, Student.class);
-        assertNotNull(response);
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNotNull(response.getBody());
+
+        String url2 = baseURL + "/students/{id}";
+        Map<String, Long> params = Map.of("id", 5L);
+        assertEquals(HttpStatus.OK, restTemplate.exchange(url2, HttpMethod.DELETE, HttpEntity.EMPTY, HttpStatus.class, params).getStatusCode());
+
         System.out.println("Success");
     }
 }
